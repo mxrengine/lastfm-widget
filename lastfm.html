@@ -1,0 +1,85 @@
+
+<html>
+<head>
+<link rel="stylesheet" href="lastfm.css">
+</head>
+<body>
+<div class="nowplayingcard">
+	<div class="nowplayingcontainer-inner">
+		<div class="trackInfo">
+		<img src='soundicon.png'>
+			<a id="tracktitle"></a> - 
+			<a href="#" id="trackartist"></a>
+		</div>
+	</div>
+</div>
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script>
+/**
+  Developed by Prashant Shrestha
+  + https://prashant.me
+*/
+var lastfmData = {
+  baseURL:
+    "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=",
+  // Your Last.fm Username
+  user: "INSERT_YOUR_USERNAME_HERE",
+  // Your API key
+  api_key: "INSERT_YOUR_EXISTING_API_KEY_HERE_FROM_https://www.last.fm/api/accounts_OR_CREATE_API_KEY_ON_https://www.last.fm/api/account/create",
+  additional: "&format=json&limit=1"
+};
+
+var getSetLastFM = function() {
+  $.ajax({
+    type: "GET",
+    url:
+      lastfmData.baseURL +
+      lastfmData.user +
+      "&api_key=" +
+      lastfmData.api_key +
+      lastfmData.additional,
+    dataType: "json",
+    success: function(resp) {
+      var recentTrack = resp.recenttracks.track[0];
+      var formatted =
+        "" + recentTrack.name;
+      $("a#tracktitle")
+        .html(formatted)
+        .attr("href", recentTrack.url)
+        .attr("title", recentTrack.name + " by " + recentTrack.artist["#text"])
+        .attr("target", "_blank");
+
+      var artistFormatted =
+        "" +
+        recentTrack.artist["#text"];
+      $("a#trackartist")
+        .html(artistFormatted)
+        .attr("title", "Artist : " + recentTrack.artist["#text"]);
+      $("img#trackart").attr("src", recentTrack.image[2]["#text"]);
+    },
+    error: function(resp) {
+      $("a#tracktitle").html(
+       "Silence"
+      );
+      $("img#trackart").attr("src", "");
+      var artistFormatted =
+        "mxrengine";
+      $("a#trackartist")
+        .html(artistFormatted)
+        .attr("href", "https://t.me/mxre_hub");
+    }
+  });
+};
+
+// Get the new one.
+getSetLastFM();
+// Start the countdown.
+setInterval(getSetLastFM, 10 * 1000);
+</script>
+
+</html>
